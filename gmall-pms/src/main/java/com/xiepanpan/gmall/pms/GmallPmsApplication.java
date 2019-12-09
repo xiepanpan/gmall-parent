@@ -1,4 +1,4 @@
-package com.atguigu.gmall.pms;
+package com.xiepanpan.gmall.pms;
 
 import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
