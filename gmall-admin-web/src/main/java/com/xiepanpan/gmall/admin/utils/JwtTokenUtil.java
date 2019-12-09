@@ -1,4 +1,4 @@
-package com.atguigu.gmall.admin.utils;
+package com.xiepanpan.gmall.admin.utils;
 
 import com.atguigu.gmall.ums.entity.Admin;
 import io.jsonwebtoken.*;
