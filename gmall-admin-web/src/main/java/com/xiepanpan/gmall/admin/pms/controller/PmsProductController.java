@@ -1,11 +1,11 @@
 package com.atguigu.gmall.admin.pms.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.atguigu.gmall.pms.service.ProductService;
-import com.atguigu.gmall.to.CommonResult;
-import com.atguigu.gmall.vo.PageInfoVo;
-import com.atguigu.gmall.vo.product.PmsProductParam;
-import com.atguigu.gmall.vo.product.PmsProductQueryParam;
+import com.xiepanpan.gmall.pms.service.ProductService;
+import com.xiepanpan.gmall.to.CommonResult;
+import com.xiepanpan.gmall.vo.PageInfoVo;
+import com.xiepanpan.gmall.vo.product.PmsProductParam;
+import com.xiepanpan.gmall.vo.product.PmsProductQueryParam;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class PmsProductController {
 
 
         log.debug("当前线程....{}-->{}",Thread.currentThread().getId(),Thread.currentThread().getName());
-        productService.saveProduct(productParam);
+//        productService.saveProduct(productParam);
         return new CommonResult().success(null);
     }
 
@@ -58,8 +58,8 @@ public class PmsProductController {
     @GetMapping(value = "/list")
     public Object getList(PmsProductQueryParam productQueryParam) {
         //TODO 查询商品
-
-        PageInfoVo pageInfoVo =  productService.productPageInfo(productQueryParam);
+        PageInfoVo pageInfoVo = null;
+//        PageInfoVo pageInfoVo =  productService.productPageInfo(productQueryParam);
 
         return new CommonResult().success(pageInfoVo);
     }

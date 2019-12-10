@@ -1,11 +1,11 @@
-package com.atguigu.gmall.ums.service.impl;
+package com.xiepanpan.gmall.ums.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.atguigu.gmall.ums.entity.Admin;
-import com.atguigu.gmall.ums.mapper.AdminMapper;
-import com.atguigu.gmall.ums.service.AdminService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiepanpan.gmall.ums.entity.Admin;
+import com.xiepanpan.gmall.ums.mapper.AdminMapper;
+import com.xiepanpan.gmall.ums.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;

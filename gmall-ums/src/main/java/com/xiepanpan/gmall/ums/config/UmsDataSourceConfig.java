@@ -1,4 +1,4 @@
-package com.atguigu.gmall.ums.config;
+package com.xiepanpan.gmall.ums.config;
 
 
 import io.shardingjdbc.core.api.MasterSlaveDataSourceFactory;

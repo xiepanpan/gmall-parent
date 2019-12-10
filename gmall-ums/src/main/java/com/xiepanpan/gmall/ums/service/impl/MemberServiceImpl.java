@@ -1,9 +1,9 @@
-package com.atguigu.gmall.ums.service.impl;
+package com.xiepanpan.gmall.ums.service.impl;
 
-import com.atguigu.gmall.ums.entity.Member;
-import com.atguigu.gmall.ums.mapper.MemberMapper;
-import com.atguigu.gmall.ums.service.MemberService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiepanpan.gmall.ums.entity.Member;
+import com.xiepanpan.gmall.ums.mapper.MemberMapper;
+import com.xiepanpan.gmall.ums.service.MemberService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
  * 会员表 服务实现类
  * </p>
  *
- * @author Lfy
- * @since 2019-05-08
+ * @author xiepanpan
+ * @since 2019-12-06
  */
 @Service
 public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> implements MemberService {

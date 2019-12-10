@@ -1,11 +1,11 @@
-package com.atguigu.gmall.admin.oms.component;
+package com.xiepanpan.gmall.admin.oms.component;
 
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.internal.OSSUtils;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
-import com.atguigu.gmall.to.OssPolicyResult;
+import com.xiepanpan.gmall.to.OssPolicyResult;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

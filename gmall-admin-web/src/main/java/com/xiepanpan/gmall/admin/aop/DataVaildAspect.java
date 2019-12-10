@@ -1,6 +1,6 @@
-package com.atguigu.gmall.admin.aop;
+package com.xiepanpan.gmall.admin.aop;
 
-import com.atguigu.gmall.to.CommonResult;
+import com.xiepanpan.gmall.to.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -46,7 +46,7 @@ public class DataVaildAspect {
      * @return
      * @throws Throwable
      */
-    @Around("execution(* com.atguigu.gmall.admin..*Controller.*(..))")
+    @Around("execution(* com.xiepanpan.gmall.admin..*Controller.*(..))")
     public Object validAround(ProceedingJoinPoint point) throws Throwable {
         Object proceed = null;
 

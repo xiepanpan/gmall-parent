@@ -1,11 +1,10 @@
-package com.atguigu.gmall.admin.pms.controller;
+package com.xiepanpan.gmall.admin.pms.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.atguigu.gmall.pms.entity.Brand;
-import com.atguigu.gmall.pms.service.BrandService;
-import com.atguigu.gmall.to.CommonResult;
-import com.atguigu.gmall.vo.PageInfoVo;
-import com.atguigu.gmall.vo.product.PmsBrandParam;
+import com.xiepanpan.gmall.pms.service.BrandService;
+import com.xiepanpan.gmall.to.CommonResult;
+import com.xiepanpan.gmall.vo.PageInfoVo;
+import com.xiepanpan.gmall.vo.product.PmsBrandParam;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.BindingResult;
@@ -70,8 +69,8 @@ public class PmsBrandController {
                             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize) {
         CommonResult commonResult = new CommonResult();
-
-        PageInfoVo vo = brandService.brandPageInfo(keyword,pageNum,pageSize);
+        PageInfoVo vo = null;
+//        PageInfoVo vo = brandService.brandPageInfo(keyword,pageNum,pageSize);
 
         return commonResult.success(vo);
     }

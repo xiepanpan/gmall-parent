@@ -1,10 +1,10 @@
-package com.atguigu.gmall.admin.pms.controller;
+package com.xiepanpan.gmall.admin.pms.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.atguigu.gmall.pms.service.ProductCategoryService;
-import com.atguigu.gmall.to.CommonResult;
-import com.atguigu.gmall.vo.product.PmsProductCategoryParam;
-import com.atguigu.gmall.vo.product.PmsProductCategoryWithChildrenItem;
+import com.xiepanpan.gmall.pms.service.ProductCategoryService;
+import com.xiepanpan.gmall.to.CommonResult;
+import com.xiepanpan.gmall.vo.product.PmsProductCategoryParam;
+import com.xiepanpan.gmall.vo.product.PmsProductCategoryWithChildrenItem;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,12 +81,12 @@ public class PmsProductCategoryController {
         return new CommonResult().success(null);
     }
 
-    @ApiOperation("查询所有一级分类及子分类[有难度]")
-    @GetMapping(value = "/list/withChildren")
-    public Object listWithChildren() {
-        //TODO 查询所有一级分类及子分类,查询任意菜单以及他下面的所有子菜单
-
-        List<PmsProductCategoryWithChildrenItem> items = productCategoryService.listCatelogWithChilder(0);
-        return new CommonResult().success(items);
-    }
+//    @ApiOperation("查询所有一级分类及子分类[有难度]")
+//    @GetMapping(value = "/list/withChildren")
+//    public Object listWithChildren() {
+//        //TODO 查询所有一级分类及子分类,查询任意菜单以及他下面的所有子菜单
+//
+//        List<PmsProductCategoryWithChildrenItem> items = productCategoryService.listCatelogWithChilder(0);
+//        return new CommonResult().success(items);
+//    }
 }

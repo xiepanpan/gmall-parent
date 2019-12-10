@@ -1,9 +1,9 @@
 package com.atguigu.gmall.admin.pms.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.atguigu.gmall.pms.service.ProductAttributeCategoryService;
-import com.atguigu.gmall.to.CommonResult;
-import com.atguigu.gmall.vo.PageInfoVo;
+import com.xiepanpan.gmall.pms.service.ProductAttributeCategoryService;
+import com.xiepanpan.gmall.to.CommonResult;
+import com.xiepanpan.gmall.vo.PageInfoVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -51,17 +51,17 @@ public class PmsProductAttributeCategoryController {
         return new CommonResult().success(null);
     }
 
-    @ApiOperation("分页获取所有商品属性分类")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    @ResponseBody
-    public Object getList(@RequestParam(defaultValue = "5") Integer pageSize,
-                          @RequestParam(defaultValue = "1") Integer pageNum) {
-
-
-        PageInfoVo pageInfoVo = productAttributeCategoryService.roductAttributeCategoryPageInfo(pageNum,pageSize);
-
-        return new CommonResult().success(pageInfoVo);
-    }
+//    @ApiOperation("分页获取所有商品属性分类")
+//    @RequestMapping(value = "/list", method = RequestMethod.GET)
+//    @ResponseBody
+//    public Object getList(@RequestParam(defaultValue = "5") Integer pageSize,
+//                          @RequestParam(defaultValue = "1") Integer pageNum) {
+//
+//
+//        PageInfoVo pageInfoVo = productAttributeCategoryService.roductAttributeCategoryPageInfo(pageNum,pageSize);
+//
+//        return new CommonResult().success(pageInfoVo);
+//    }
 
     @ApiOperation("获取所有商品属性分类及其下属性【难度较高】")
     @RequestMapping(value = "/list/withAttr", method = RequestMethod.GET)

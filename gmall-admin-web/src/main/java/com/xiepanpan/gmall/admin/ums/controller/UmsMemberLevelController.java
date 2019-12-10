@@ -1,10 +1,10 @@
-package com.atguigu.gmall.admin.ums.controller;
+package com.xiepanpan.gmall.admin.ums.controller;
 
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.atguigu.gmall.to.CommonResult;
-import com.atguigu.gmall.ums.entity.MemberLevel;
-import com.atguigu.gmall.ums.service.MemberLevelService;
+import com.xiepanpan.gmall.to.CommonResult;
+import com.xiepanpan.gmall.ums.entity.MemberLevel;
+import com.xiepanpan.gmall.ums.service.MemberLevelService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

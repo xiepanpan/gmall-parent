@@ -1,6 +1,6 @@
-package com.atguigu.gmall.admin.aop;
+package com.xiepanpan.gmall.admin.aop;
 
-import com.atguigu.gmall.to.CommonResult;
+import com.xiepanpan.gmall.to.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

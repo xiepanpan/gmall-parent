@@ -1,6 +1,6 @@
 package com.xiepanpan.gmall.admin.utils;
 
-import com.atguigu.gmall.ums.entity.Admin;
+import com.xiepanpan.gmall.ums.entity.Admin;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

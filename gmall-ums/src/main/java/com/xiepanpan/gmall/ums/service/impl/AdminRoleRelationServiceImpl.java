@@ -1,9 +1,9 @@
-package com.atguigu.gmall.ums.service.impl;
+package com.xiepanpan.gmall.ums.service.impl;
 
-import com.atguigu.gmall.ums.entity.AdminRoleRelation;
-import com.atguigu.gmall.ums.mapper.AdminRoleRelationMapper;
-import com.atguigu.gmall.ums.service.AdminRoleRelationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiepanpan.gmall.ums.entity.AdminRoleRelation;
+import com.xiepanpan.gmall.ums.mapper.AdminRoleRelationMapper;
+import com.xiepanpan.gmall.ums.service.AdminRoleRelationService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
  * 后台用户和角色关系表 服务实现类
  * </p>
  *
- * @author Lfy
- * @since 2019-05-08
+ * @author xiepanpan
+ * @since 2019-12-06
  */
 @Service
 public class AdminRoleRelationServiceImpl extends ServiceImpl<AdminRoleRelationMapper, AdminRoleRelation> implements AdminRoleRelationService {

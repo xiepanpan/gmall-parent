@@ -1,9 +1,9 @@
-package com.atguigu.gmall.admin.oms.controller;
+package com.xiepanpan.gmall.admin.oms.controller;
 
 
-import com.atguigu.gmall.admin.oms.component.OssCompent;
-import com.atguigu.gmall.to.CommonResult;
-import com.atguigu.gmall.to.OssPolicyResult;
+import com.xiepanpan.gmall.admin.oms.component.OssCompent;
+import com.xiepanpan.gmall.to.CommonResult;
+import com.xiepanpan.gmall.to.OssPolicyResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

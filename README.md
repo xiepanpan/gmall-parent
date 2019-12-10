@@ -11,3 +11,5 @@ mybaitplus
 sharding-jdbc配置多数据源 读写分离
 
 elk搭建日志系统
+
+admin-web：排除数据源配置 

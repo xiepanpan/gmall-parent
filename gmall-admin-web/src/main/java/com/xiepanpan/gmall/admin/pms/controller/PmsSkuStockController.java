@@ -1,9 +1,9 @@
-package com.atguigu.gmall.admin.pms.controller;
+package com.xiepanpan.gmall.admin.pms.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.atguigu.gmall.pms.entity.SkuStock;
-import com.atguigu.gmall.pms.service.SkuStockService;
-import com.atguigu.gmall.to.CommonResult;
+import com.xiepanpan.gmall.pms.entity.SkuStock;
+import com.xiepanpan.gmall.pms.service.SkuStockService;
+import com.xiepanpan.gmall.to.CommonResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
