@@ -1,4 +1,4 @@
-package com.atguigu.gmall.admin.ums.controller;
+package com.xiepanpan.gmall.admin.ums.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.atguigu.gmall.admin.ums.vo.UmsAdminLoginParam;
@@ -146,28 +146,28 @@ public class UmsAdminController {
         return new CommonResult().success(tokenMap);
     }
 
-//    @ApiOperation(value = "获取当前登录用户信息")
-//    @RequestMapping(value = "/info", method = RequestMethod.GET)
-//    @ResponseBody
-//    public Object getAdminInfo(HttpServletRequest request) {
-//        String oldToken = request.getHeader(tokenHeader);
-//
-//        String userName = jwtTokenUtil.getUserNameFromToken(oldToken.substring(tokenHead.length()));
-//        //查询用户的头像
-//
-//        //1、getOne是mybatis-plus生成的，而且带了泛型的。
-//        //2、dubbo没办法直接调用mp中带泛型的service；
-//        //3、实战经验：
-//        //  mp自动生成有可能用兼容问题，最好不要远程调用；
-//        //
-//        //Admin umsAdmin = adminService.getOne(new QueryWrapper<Admin>().eq("username", userName));
-//        Admin umsAdmin = adminService.getUserInfo(userName);
-//        Map<String, Object> data = new HashMap<>();
-//        data.put("username", umsAdmin.getUsername());
-//        data.put("roles", new String[]{"TEST"});
-//        data.put("icon", umsAdmin.getIcon());
-//        return new CommonResult().success(data);
-//    }
+    @ApiOperation(value = "获取当前登录用户信息")
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getAdminInfo(HttpServletRequest request) {
+        String oldToken = request.getHeader(tokenHeader);
+
+        String userName = jwtTokenUtil.getUserNameFromToken(oldToken.substring(tokenHead.length()));
+        //查询用户的头像
+
+        //1、getOne是mybatis-plus生成的，而且带了泛型的。
+        //2、dubbo没办法直接调用mp中带泛型的service；
+        //3、实战经验：
+        //  mp自动生成有可能用兼容问题，最好不要远程调用；
+        //
+        //Admin umsAdmin = adminService.getOne(new QueryWrapper<Admin>().eq("username", userName));
+        Admin umsAdmin = adminService.getUserInfo(userName);
+        Map<String, Object> data = new HashMap<>();
+        data.put("username", umsAdmin.getUsername());
+        data.put("roles", new String[]{"TEST"});
+        data.put("icon", umsAdmin.getIcon());
+        return new CommonResult().success(data);
+    }
 
     @ApiOperation(value = "登出功能")
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
