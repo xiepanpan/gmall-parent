@@ -1,4 +1,4 @@
-package com.atguigu.gmall.admin.pms.controller;
+package com.xiepanpan.gmall.admin.pms.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.xiepanpan.gmall.pms.service.ProductService;
@@ -58,8 +58,7 @@ public class PmsProductController {
     @GetMapping(value = "/list")
     public Object getList(PmsProductQueryParam productQueryParam) {
         //TODO 查询商品
-        PageInfoVo pageInfoVo = null;
-//        PageInfoVo pageInfoVo =  productService.productPageInfo(productQueryParam);
+        PageInfoVo pageInfoVo =  productService.productPageInfo(productQueryParam);
 
         return new CommonResult().success(pageInfoVo);
     }

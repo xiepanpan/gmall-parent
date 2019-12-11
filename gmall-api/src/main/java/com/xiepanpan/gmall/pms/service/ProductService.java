@@ -2,6 +2,8 @@ package com.xiepanpan.gmall.pms.service;
 
 import com.xiepanpan.gmall.pms.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xiepanpan.gmall.vo.PageInfoVo;
+import com.xiepanpan.gmall.vo.product.PmsProductQueryParam;
 
 /**
  * <p>
@@ -13,4 +15,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ProductService extends IService<Product> {
 
+    /**
+     * 根据复杂查询条件返回分页数据
+     * @param productQueryParam
+     * @return
+     */
+    PageInfoVo productPageInfo(PmsProductQueryParam productQueryParam);
 }

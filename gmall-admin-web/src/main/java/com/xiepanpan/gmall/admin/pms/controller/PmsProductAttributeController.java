@@ -1,4 +1,4 @@
-package com.atguigu.gmall.admin.pms.controller;
+package com.xiepanpan.gmall.admin.pms.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.xiepanpan.gmall.pms.service.ProductAttributeService;
