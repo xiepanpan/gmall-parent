@@ -1,4 +1,4 @@
-package com.atguigu.gmall.admin.ums.vo;
+package com.xiepanpan.gmall.admin.ums.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

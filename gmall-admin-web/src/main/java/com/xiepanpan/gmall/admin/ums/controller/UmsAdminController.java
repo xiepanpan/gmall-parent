@@ -1,10 +1,10 @@
 package com.xiepanpan.gmall.admin.ums.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.atguigu.gmall.admin.ums.vo.UmsAdminLoginParam;
-import com.atguigu.gmall.admin.ums.vo.UmsAdminParam;
 //import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xiepanpan.gmall.admin.ums.vo.UmsAdminLoginParam;
+import com.xiepanpan.gmall.admin.ums.vo.UmsAdminParam;
 import com.xiepanpan.gmall.admin.utils.JwtTokenUtil;
 import com.xiepanpan.gmall.to.CommonResult;
 import com.xiepanpan.gmall.ums.entity.Admin;
@@ -69,7 +69,7 @@ public class UmsAdminController {
      */
     @ApiOperation(value = "用户注册")
     @PostMapping(value = "/register")
-    public Object register(@Valid @RequestBody UmsAdminParam umsAdminParam,BindingResult result) {
+    public Object register(@Valid @RequestBody UmsAdminParam umsAdminParam, BindingResult result) {
         Admin admin = null;
 
         //TODO 完成注册功能
