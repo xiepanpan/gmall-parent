@@ -69,8 +69,7 @@ public class PmsBrandController {
                             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                             @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize) {
         CommonResult commonResult = new CommonResult();
-        PageInfoVo vo = null;
-//        PageInfoVo vo = brandService.brandPageInfo(keyword,pageNum,pageSize);
+        PageInfoVo vo = brandService.brandPageInfo(keyword,pageNum,pageSize);
 
         return commonResult.success(vo);
     }

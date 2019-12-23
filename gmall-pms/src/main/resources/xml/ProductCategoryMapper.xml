@@ -7,4 +7,34 @@
         id, parent_id, name, level, product_count, product_unit, nav_status, show_status, sort, icon, keywords, description
     </sql>
 
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.xiepanpan.gmall.pms.entity.ProductCategory">
+        <id column="id" property="id" />
+        <result column="parent_id" property="parentId" />
+        <result column="name" property="name" />
+        <result column="level" property="level" />
+        <result column="product_count" property="productCount" />
+        <result column="product_unit" property="productUnit" />
+        <result column="nav_status" property="navStatus" />
+        <result column="show_status" property="showStatus" />
+        <result column="sort" property="sort" />
+        <result column="icon" property="icon" />
+        <result column="keywords" property="keywords" />
+        <result column="description" property="description" />
+    </resultMap>
+
+    <resultMap id="ExtendResultMap"
+               type="com.xiepanpan.gmall.vo.product.PmsProductCategoryWithChildrenItem"
+               extends="BaseResultMap">
+        <collection property="children" select="listCategoryWithChildren"
+                    column="id"></collection>
+        <!--<association property=""-->
+
+    </resultMap>
+
+    <!--缓存-->
+    <!--List<PmsProductCategoryWithChildrenItem> listCatelogWithChilder(Integer i);-->
+    <select id="listCategoryWithChildren" resultMap="ExtendResultMap">
+        select * from pms_product_category where parent_id=#{i}
+    </select>
 </mapper>
