@@ -51,17 +51,17 @@ public class PmsProductAttributeCategoryController {
         return new CommonResult().success(null);
     }
 
-//    @ApiOperation("分页获取所有商品属性分类")
-//    @RequestMapping(value = "/list", method = RequestMethod.GET)
-//    @ResponseBody
-//    public Object getList(@RequestParam(defaultValue = "5") Integer pageSize,
-//                          @RequestParam(defaultValue = "1") Integer pageNum) {
-//
-//
-//        PageInfoVo pageInfoVo = productAttributeCategoryService.roductAttributeCategoryPageInfo(pageNum,pageSize);
-//
-//        return new CommonResult().success(pageInfoVo);
-//    }
+    @ApiOperation("分页获取所有商品属性分类")
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getList(@RequestParam(defaultValue = "5") Integer pageSize,
+                          @RequestParam(defaultValue = "1") Integer pageNum) {
+
+
+        PageInfoVo pageInfoVo = productAttributeCategoryService.productAttributeCategoryPageInfo(pageNum,pageSize);
+
+        return new CommonResult().success(pageInfoVo);
+    }
 
     @ApiOperation("获取所有商品属性分类及其下属性【难度较高】")
     @RequestMapping(value = "/list/withAttr", method = RequestMethod.GET)
