@@ -6,6 +6,8 @@ import com.xiepanpan.gmall.vo.PageInfoVo;
 import com.xiepanpan.gmall.vo.product.PmsProductParam;
 import com.xiepanpan.gmall.vo.product.PmsProductQueryParam;
 
+import java.util.List;
+
 /**
  * <p>
  * 商品信息 服务类
@@ -28,4 +30,11 @@ public interface ProductService extends IService<Product> {
      * @param productParam
      */
     void saveProduct(PmsProductParam productParam);
+
+    /**
+     * 批量上下架
+     * @param ids
+     * @param publishStatus
+     */
+    void updatePublishStatus(List<Long> ids, Integer publishStatus);
 }

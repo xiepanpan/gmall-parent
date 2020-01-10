@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xiepanpan.gmall.constant.EsConstant;
 import com.xiepanpan.gmall.pms.entity.*;
 import com.xiepanpan.gmall.pms.mapper.*;
 import com.xiepanpan.gmall.pms.service.ProductService;
@@ -11,8 +12,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiepanpan.gmall.vo.PageInfoVo;
 import com.xiepanpan.gmall.vo.product.PmsProductParam;
 import com.xiepanpan.gmall.vo.product.PmsProductQueryParam;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Delete;
+import io.searchbox.core.DocumentResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.engine.Engine;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +55,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     SkuStockMapper skuStockMapper;
+
+    @Autowired
+    JestClient jestClient;
 
     //当前线程共享同样的数据
     public static ThreadLocal<Long> threadLocal = new ThreadLocal<>();
@@ -104,6 +112,55 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         //以上的写法只是相当于一个saveProduct事务。
 
+    }
+
+    @Override
+    public void updatePublishStatus(List<Long> ids, Integer publishStatus) {
+        if (publishStatus==0) {
+            ids.forEach((id)->{
+                //下架
+                //改数据库状态
+                setProductPublishStatus(publishStatus,id);
+                //删es
+                deleteProductFromEs(id);
+            });
+        }else {
+            //上架
+            ids.forEach((id)->{
+                setProductPublishStatus(publishStatus,id);
+                //加es
+                saveProductToEs(id);
+            });
+        }
+    }
+
+    private void saveProductToEs(Long id) {
+    }
+
+    /**
+     * 从es中删除商品
+     * @param id
+     */
+    private void deleteProductFromEs(Long id) {
+        Delete delete = new Delete.Builder(id.toString()).index(EsConstant.PRODUCT_ES_INDEX)
+                .type(EsConstant.PRODUCT_INFO_ES_TYPE).build();
+        DocumentResult execute = jestClient.execute(delete);
+        try {
+            if (execute.isSucceeded()) {
+                log.info("商品：{} ==> ES下架完成",id);
+            }else  {
+                log.error("商品：{} ==》ES下架失败",id);
+            }
+        } catch (Exception e) {
+            log.error("商品：{} ==》ES下架失败",id);
+        }
+    }
+
+    private void setProductPublishStatus(Integer publishStatus, Long id) {
+        Product product = new Product();
+        product.setId(id);
+        product.setPublishStatus(publishStatus);
+        productMapper.updateById(product);
     }
 
     /**
