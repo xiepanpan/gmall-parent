@@ -36,7 +36,7 @@ public class PmsProductController {
 
 
         log.debug("当前线程....{}-->{}",Thread.currentThread().getId(),Thread.currentThread().getName());
-//        productService.saveProduct(productParam);
+        productService.saveProduct(productParam);
         return new CommonResult().success(null);
     }
 
