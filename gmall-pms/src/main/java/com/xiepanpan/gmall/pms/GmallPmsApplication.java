@@ -4,6 +4,8 @@ import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 /**
@@ -16,8 +18,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 3）、在kibana里面建立好日志的索引，就可以可视化检索
  *
  */
+@EnableAspectJAutoProxy(exposeProxy = true)
 @EnableDubbo
 @MapperScan(basePackages = "com.xiepanpan.gmall.pms.mapper")
+@EnableTransactionManagement
 @SpringBootApplication
 public class GmallPmsApplication {
 
