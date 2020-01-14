@@ -19,6 +19,13 @@ import java.util.List;
 public interface ProductService extends IService<Product> {
 
     /**
+     * 根据id查询商品信息
+     * @param id
+     * @return
+     */
+    Product getProductInfo(Long id);
+
+    /**
      * 根据复杂查询条件返回分页数据
      * @param productQueryParam
      * @return

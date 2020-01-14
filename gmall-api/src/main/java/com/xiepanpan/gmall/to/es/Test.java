@@ -6,4 +6,6 @@ package com.xiepanpan.gmall.to.es;
  * @Description:
  */
 public class Test {
+    private int  anInt;
+    private  int b;
 }

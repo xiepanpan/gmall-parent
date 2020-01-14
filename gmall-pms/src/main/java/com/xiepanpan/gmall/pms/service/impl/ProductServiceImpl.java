@@ -9,6 +9,7 @@ import com.xiepanpan.gmall.pms.entity.*;
 import com.xiepanpan.gmall.pms.mapper.*;
 import com.xiepanpan.gmall.pms.service.ProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiepanpan.gmall.to.es.EsProduct;
 import com.xiepanpan.gmall.vo.PageInfoVo;
 import com.xiepanpan.gmall.vo.product.PmsProductParam;
 import com.xiepanpan.gmall.vo.product.PmsProductQueryParam;
@@ -61,6 +62,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     //当前线程共享同样的数据
     public static ThreadLocal<Long> threadLocal = new ThreadLocal<>();
+
+    @Override
+    public Product getProductInfo(Long id) {
+        return productMapper.selectById(id);
+    }
 
     @Override
     public PageInfoVo productPageInfo(PmsProductQueryParam productQueryParam) {
@@ -135,6 +141,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     private void saveProductToEs(Long id) {
+        Product product = getProductInfo(id);
+        EsProduct esProduct = new EsProduct();
+
+        BeanUtils.copyProperties(product,esProduct);
+
+
     }
 
     /**
