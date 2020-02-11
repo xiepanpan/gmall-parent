@@ -10,12 +10,15 @@ import com.xiepanpan.gmall.pms.mapper.*;
 import com.xiepanpan.gmall.pms.service.ProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiepanpan.gmall.to.es.EsProduct;
+import com.xiepanpan.gmall.to.es.EsProductAttributeValue;
+import com.xiepanpan.gmall.to.es.EsSkuProductInfo;
 import com.xiepanpan.gmall.vo.PageInfoVo;
 import com.xiepanpan.gmall.vo.product.PmsProductParam;
 import com.xiepanpan.gmall.vo.product.PmsProductQueryParam;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Delete;
 import io.searchbox.core.DocumentResult;
+import io.searchbox.core.Index;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.engine.Engine;
@@ -27,6 +30,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -141,11 +146,77 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     private void saveProductToEs(Long id) {
+        //查询商品基本信息
         Product product = getProductInfo(id);
         EsProduct esProduct = new EsProduct();
 
+        //复制基本信息
         BeanUtils.copyProperties(product,esProduct);
+        //复制sku信息 对于es要保存商品信息  还要查出这个商品的sku 给es保存
+        List<SkuStock> stocks = skuStockMapper.selectList(new QueryWrapper<SkuStock>().eq("product_id", id));
+        List<EsSkuProductInfo> esSkuProductInfos = new ArrayList<>(stocks.size());
 
+        //查出当前商品的sku属性  颜色 尺码
+        List<ProductAttribute> skuAttributeNames = productAttributeValueMapper.selectProductSaleAttrName(id);
+        stocks.forEach(skuStock -> {
+            EsSkuProductInfo info = new EsSkuProductInfo();
+            BeanUtils.copyProperties(skuStock,info);
+
+            String subTitle = esProduct.getName();
+            if (!StringUtils.isEmpty(skuStock.getSp1())) {
+                subTitle+=" "+skuStock.getSp1();
+            }
+            if(!StringUtils.isEmpty(skuStock.getSp2())){
+                subTitle+=" "+skuStock.getSp2();
+            }
+            if(!StringUtils.isEmpty(skuStock.getSp3())){
+                subTitle+=" "+skuStock.getSp3();
+            }
+            info.setSkuTitle(subTitle);
+            List<EsProductAttributeValue> skuAttributeValues = new ArrayList<>();
+
+            for (int i = 0; i <skuAttributeNames.size() ; i++) {
+                EsProductAttributeValue value = new EsProductAttributeValue();
+                value.setName(skuAttributeNames.get(i).getName());
+                value.setProductId(id);
+                value.setProductAttributeId(skuAttributeNames.get(i).getId());
+                value.setType(skuAttributeNames.get(i).getType());
+                //颜色  尺寸
+                if (i==0) {
+                    value.setValue(skuStock.getSp1());
+                }
+                if (i==1) {
+                    value.setValue(skuStock.getSp2());
+                }
+                if (i==2) {
+                    value.setValue(skuStock.getSp3());
+                }
+                skuAttributeValues.add(value);
+            }
+            info.setAttributeValues(skuAttributeValues);
+            esSkuProductInfos.add(info);
+        });
+
+        esProduct.setSkuProductInfos(esSkuProductInfos);
+        List<EsProductAttributeValue> attributeValues = productAttributeValueMapper.selectProductBaseAttrAndValue(id);
+        esProduct.setAttrValueList(attributeValues);
+
+        try {
+            Index build = new Index.Builder(esProduct)
+                    .index(EsConstant.PRODUCT_ES_INDEX)
+                    .type(EsConstant.PRODUCT_INFO_ES_TYPE)
+                    .id(id.toString())
+                    .build();
+            DocumentResult execute = jestClient.execute(build);
+            boolean succeeded = execute.isSucceeded();
+            if (succeeded) {
+                log.info("ES中；id为{}商品上架完成",id);
+            } else {
+                log.error("ES中；id为{}商品未保存成功，开始重试",id);
+            }
+        } catch (IOException e) {
+            log.error("ES中；id为{}商品数据保存异常；{}",id,e.getMessage());
+        }
 
     }
 
@@ -156,8 +227,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private void deleteProductFromEs(Long id) {
         Delete delete = new Delete.Builder(id.toString()).index(EsConstant.PRODUCT_ES_INDEX)
                 .type(EsConstant.PRODUCT_INFO_ES_TYPE).build();
-        DocumentResult execute = jestClient.execute(delete);
         try {
+            DocumentResult execute = jestClient.execute(delete);
             if (execute.isSucceeded()) {
                 log.info("商品：{} ==> ES下架完成",id);
             }else  {
