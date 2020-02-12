@@ -1,9 +1,16 @@
 package com.xiepanpan.gmall.search.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.xiepanpan.gmall.constant.EsConstant;
 import com.xiepanpan.gmall.search.SearchProductService;
 import com.xiepanpan.gmall.vo.search.SearchParam;
 import com.xiepanpan.gmall.vo.search.SearchResponse;
+import com.xiepanpan.gmall.vo.search.SearchResponseAttrVo;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
+import io.searchbox.core.search.aggregation.MetricAggregation;
+import io.searchbox.core.search.aggregation.TermsAggregation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
@@ -16,7 +23,12 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author: xiepanpan
@@ -27,16 +39,63 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class SearchProductServiceImpl implements SearchProductService {
+
+    @Autowired
+    JestClient jestClient;
+
     @Override
     public SearchResponse searchProduct(SearchParam searchParam) {
         // 1. 构建检索条件
         String dsl = buildDsl(searchParam);
         log.info("商品检索的详细数据{}",dsl);
+        Search search = new Search.Builder(dsl).addIndex(EsConstant.PRODUCT_ES_INDEX)
+                .addType(EsConstant.PRODUCT_INFO_ES_TYPE).build();
         // 2. 检索
+        SearchResult execute = null;
+        try {
+            execute = jestClient.execute(search);
+        } catch (IOException e) {
+            log.error(e);
+        }
         // 3. 将返回的SearchResult转为SearchResponse
-
+        SearchResponse searchResponse = buildSearchResponse(execute);
+        searchResponse.setPageNum(searchParam.getPageNum());
+        searchResponse.setPageSize(searchParam.getPageSize());
 
         return null;
+    }
+
+    /**
+     * 构建检索结果
+     * @param execute
+     * @return
+     */
+    private SearchResponse buildSearchResponse(SearchResult execute) {
+        SearchResponse searchResponse = new SearchResponse();
+        MetricAggregation aggregations = execute.getAggregations();
+
+        //===================以下是分析聚合品牌信息===============================
+        TermsAggregation brand_agg = aggregations.getTermsAggregation("brand_agg");
+        List<String> brandNames = new ArrayList<>();
+        brand_agg.getBuckets().forEach(bucket->{
+            String keyAsString = bucket.getKeyAsString();
+            brandNames.add(keyAsString);
+        });
+        SearchResponseAttrVo attrVo = new SearchResponseAttrVo();
+        attrVo.setName("品牌");
+        attrVo.setValue(brandNames);
+
+        searchResponse.setBrand(attrVo);
+        //=====================品牌提取完成===========================
+
+        //=============以下提取分类信息======================
+        TermsAggregation category_agg = aggregations.getTermsAggregation("category_agg");
+        List<String> categoryValues = new ArrayList<>();
+        category_agg.getBuckets().forEach(bucket->{
+            String keyAsString = bucket.getKeyAsString();
+            bucket.getTermsAggregation("ca")
+        });
+
     }
 
     private String buildDsl(SearchParam searchParam) {
@@ -108,6 +167,10 @@ public class SearchProductServiceImpl implements SearchProductService {
         //聚合看attrValue的值
         attrName_agg.subAggregation(AggregationBuilders.terms("attrValue_agg").field("attrValueList.value.keyword"));
         //聚合看attrId的值
+        attrName_agg.subAggregation(AggregationBuilders.terms("attrId_agg").field("attrValueList.productAttributeId"));
+
+        attr_agg.subAggregation(attrName_agg);
+        builder.aggregation(attr_agg);
 
         //4. 分页
         builder.from((searchParam.getPageNum()-1)*searchParam.getPageSize());
