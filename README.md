@@ -41,6 +41,8 @@ http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-service.html
 
 - es mapping修改 **嵌入式对象的Mapping一定要用nested声明，这样才能正确的检索到数据**
 
+商品数据的Mapping：
+
 ```json
 GET product/_mapping
 
@@ -275,4 +277,169 @@ PUT /product
   }
 }
 ```
+
+## 第八天 
+
+前端环境搭建  搜索服务 dsl语句
+
+构建dsl语句的大体步骤：
+
+1. 查询
+   - 检索
+   - 过滤
+     - 按属性 品牌 分类 过滤
+2. 高亮
+3. 聚合
+4. 分页
+
+商品的检索sql
+
+```json
+GET product/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "nested": {
+            "path": "skuProductInfos",
+            "query": {
+              "match": {
+                "skuProductInfos.skuTitle": "手机"
+              }
+            }
+          }
+        }
+      ],
+      "filter": [
+        {
+          "nested": {
+            "path": "attrValueList",
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "match": {
+                      "attrValueList.name": "屏幕尺寸"
+                    }
+                  },
+                  {
+                    "match": {
+                      "attrValueList.value.keyword": "4.7"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "nested": {
+            "path": "attrValueList",
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "match": {
+                      "attrValueList.name": "网络"
+                    }
+                  },
+                  {
+                    "match": {
+                      "attrValueList.value.keyword": "4G"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "term": {
+            "brandName.keyword": "苹果"
+          }
+        },
+        {
+          "term": {
+            "productCategoryId": "19"
+          }
+        },
+        {
+          "range": {
+            "price": {
+              "gte": 5000,
+              "lte": 10000
+            }
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "brand_agg": {
+      "terms": {
+        "field": "brandName.keyword"
+      },
+      "aggs": {
+        "brandId": {
+          "terms": {
+            "field": "brandId",
+            "size": 10
+          }
+        }
+      }
+    },
+    "category_agg": {
+      "terms": {
+        "field": "productCategoryName.keyword",
+        "size": 10
+      }
+    },
+    "attr_agg": {
+      "nested": {
+        "path": "attrValueList"
+      },
+      "aggs": {
+        "attrName_agg": {
+          "terms": {
+            "field": "attrValueList.name",
+            "size": 10
+          },
+          "aggs": {
+            "attrValue_agg": {
+              "terms": {
+                "field": "attrValueList.value.keyword",
+                "size": 10
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "highlight": {
+    "pre_tags": "<b style='color:red'>",
+    "post_tags": "</b>",
+    "fields": {
+      "skuProductInfos.skuTitle": {}
+    }
+  },
+  "from": 0,
+  "size": 12,
+  "sort": [
+    {
+      "price": {
+        "order": "asc"
+      }
+    },
+    {
+      "sort":{
+        "order": "asc"
+      }
+    }
+  ]
+}
+```
+
+
 
