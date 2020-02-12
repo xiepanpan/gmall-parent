@@ -41,3 +41,238 @@ http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-service.html
 
 - es mapping修改 **嵌入式对象的Mapping一定要用nested声明，这样才能正确的检索到数据**
 
+```json
+GET product/_mapping
+
+DELETE product
+
+PUT /product
+{
+  "mappings": {
+    "info": {
+      "properties": {
+        "attrValueList": {
+		  "type":"nested",
+          "properties": {
+            "id": {
+              "type": "long"
+            },
+            "name": {
+              "type": "keyword"
+            },
+            "productAttributeId": {
+              "type": "long"
+            },
+            "productId": {
+              "type": "long"
+            },
+            "type": {
+              "type": "long"
+            },
+            "value": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "brandId": {
+          "type": "long"
+        },
+        "brandName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "id": {
+          "type": "long"
+        },
+        "keywords": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "name": {
+          "type": "text",
+		  "analyzer": "ik_max_word",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "newStatus": {
+          "type": "long"
+        },
+        "pic": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "price": {
+          "type": "float"
+        },
+        "productCategoryId": {
+          "type": "long"
+        },
+        "productCategoryName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "productSn": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "promotionType": {
+          "type": "long"
+        },
+        "recommandStatus": {
+          "type": "long"
+        },
+        "sale": {
+          "type": "long"
+        },
+        "skuProductInfos": {
+		  "type":"nested",
+          "properties": {
+            "attributeValues": {
+			  "type":"nested",
+              "properties": {
+                "name": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  }
+                },
+                "productAttributeId": {
+                  "type": "long"
+                },
+                "productId": {
+                  "type": "long"
+                },
+                "type": {
+                  "type": "long"
+                },
+                "value": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  }
+                }
+              }
+            },
+            "id": {
+              "type": "long"
+            },
+            "lockStock": {
+              "type": "long"
+            },
+            "lowStock": {
+              "type": "long"
+            },
+            "pic": {
+              "type": "keyword"
+            },
+            "price": {
+              "type": "float"
+            },
+            "productId": {
+              "type": "long"
+            },
+            "skuCode": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "skuTitle": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+			      "analyzer": "ik_max_word"
+            },
+            "sp1": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "sp2": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "stock": {
+              "type": "long"
+            }
+          }
+        },
+        "sort": {
+          "type": "long"
+        },
+        "stock": {
+          "type": "long"
+        },
+        "subTitle": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          },
+		    "analyzer": "ik_max_word"
+        }
+      }
+    }
+  }
+}
+```
+
