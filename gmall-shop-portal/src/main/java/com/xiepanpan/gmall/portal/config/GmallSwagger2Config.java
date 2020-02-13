@@ -1,4 +1,4 @@
-package com.xiepanpan.gmall.admin.config;
+package com.xiepanpan.gmall.portal.config;
 
 import io.swagger.annotations.Api;
 import org.springframework.context.annotation.Bean;
@@ -15,13 +15,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 public class GmallSwagger2Config {
 
-    @Bean("后台用户模块")
+    @Bean("检索模块")
     public Docket userApis() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("后台用户模块")
+                .groupName("检索模块")
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
-                .paths(PathSelectors.regex("/admin.*"))
+                .paths(PathSelectors.regex("/search.*"))
                 .build()
                 .apiInfo(apiInfo())
                 .enable(true);
@@ -29,8 +29,8 @@ public class GmallSwagger2Config {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("谷粒商城-后台管理系统平台接口文档")
-                .description("提供pms、oms、ums、cms、sms模块的文档")
+                .title("谷粒商城-检索平台接口文档")
+                .description("提供检索模块的文档")
                 .termsOfServiceUrl("http://www.xiepanpan.com/")
                 .version("1.0")
                 .build();
