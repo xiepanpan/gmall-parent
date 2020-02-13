@@ -1,8 +1,10 @@
 package com.xiepanpan.gmall.search.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.xiepanpan.gmall.constant.EsConstant;
 import com.xiepanpan.gmall.search.SearchProductService;
+import com.xiepanpan.gmall.to.es.EsProduct;
 import com.xiepanpan.gmall.vo.search.SearchParam;
 import com.xiepanpan.gmall.vo.search.SearchResponse;
 import com.xiepanpan.gmall.vo.search.SearchResponseAttrVo;
@@ -28,7 +30,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: xiepanpan
@@ -55,7 +59,7 @@ public class SearchProductServiceImpl implements SearchProductService {
         try {
             execute = jestClient.execute(search);
         } catch (IOException e) {
-            log.error(e);
+            log.error("商品检索异常:{}"+e);
         }
         // 3. 将返回的SearchResult转为SearchResponse
         SearchResponse searchResponse = buildSearchResponse(execute);
@@ -92,10 +96,64 @@ public class SearchProductServiceImpl implements SearchProductService {
         TermsAggregation category_agg = aggregations.getTermsAggregation("category_agg");
         List<String> categoryValues = new ArrayList<>();
         category_agg.getBuckets().forEach(bucket->{
-            String keyAsString = bucket.getKeyAsString();
-            bucket.getTermsAggregation("ca")
+            String categoryName = bucket.getKeyAsString();
+            TermsAggregation categoryId_agg = bucket.getTermsAggregation("categoryId_agg");
+            String categoryId = categoryId_agg.getBuckets().get(0).getKeyAsString();
+            Map<String,String> map = new HashMap<String,String>();
+            map.put("id",categoryId);
+            map.put("name",categoryName);
+            String cateInfo = JSON.toJSONString(map);
+            categoryValues.add(cateInfo);
         });
 
+        SearchResponseAttrVo catelog = new SearchResponseAttrVo();
+        catelog.setName("分类");
+        catelog.setValue(categoryValues);
+
+        searchResponse.setCatelog(catelog);
+        //==================分类信息提取完成========================
+
+        //==================提取聚合的属性信息=============
+        TermsAggregation termsAggregation = aggregations.getChildrenAggregation("attr_agg").getTermsAggregation("attrName_agg");
+        List<SearchResponseAttrVo> attrList = new ArrayList<>();
+
+        termsAggregation.getBuckets().forEach(bucket->{
+            //属性名字
+            SearchResponseAttrVo vo = new SearchResponseAttrVo();
+            String attrName = bucket.getKeyAsString();
+            vo.setName(attrName);
+
+            //属性id
+            TermsAggregation attrIdAgg = bucket.getTermsAggregation("attrId_agg");
+            vo.setProductAttributeId(Long.valueOf(attrIdAgg.getBuckets().get(0).getKeyAsString()));
+
+            //属性所涉及的所有值
+            TermsAggregation attrValueAgg = bucket.getTermsAggregation("attrValue_agg");
+            List<String> valueList = new ArrayList<>();
+            attrValueAgg.getBuckets().forEach(valueBucket->{
+                valueList.add(valueBucket.getKeyAsString());
+            });
+            vo.setValue(valueList);
+            attrList.add(vo);
+        });
+        searchResponse.setAttrs(attrList);
+        //==================提取聚合的属性信息完成=============
+
+        //===============提取检索到的商品数据=========================
+        List<SearchResult.Hit<EsProduct, Void>> hits = execute.getHits(EsProduct.class);
+        List<EsProduct> esProducts = new ArrayList<>();
+        hits.forEach(hit->{
+            EsProduct source = hit.source;
+            //提取到高亮结果
+            String title = hit.highlight.get("skuProductInfos.skuTitle").get(0);
+            //设置高亮结果
+            source.setName(title);
+            esProducts.add(source);
+        });
+        searchResponse.setProducts(esProducts);
+        //==============提取检索到的商品数据完成============
+        searchResponse.setTotal(execute.getTotal());
+        return searchResponse;
     }
 
     private String buildDsl(SearchParam searchParam) {

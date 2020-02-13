@@ -441,5 +441,5 @@ GET product/_search
 }
 ```
 
-
+es最重要的就是数据模型
 

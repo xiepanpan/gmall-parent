@@ -27,10 +27,25 @@ public class GmallSearchApplicationTests {
     SearchProductService searchProductService;
 
     @Test
-    public void dslTest() {
+    public void dslTest(){
         SearchParam searchParam = new SearchParam();
         searchParam.setKeyword("手机");
+
+
+        String[] brand = new String[]{"苹果"};
+        searchParam.setBrand(brand);
+
+        String[] cate = new String[]{"19","20"};
+        searchParam.setCatelog3(cate);
+
+        searchParam.setPriceFrom(5000);
+        searchParam.setPriceTo(10000);
+
+        String[] props = new String[]{"45:4.7","46:4G"};
+        searchParam.setProps(props);
         searchProductService.searchProduct(searchParam);
+
+
     }
 
     @Test
