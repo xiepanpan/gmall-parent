@@ -66,7 +66,7 @@ public class SearchProductServiceImpl implements SearchProductService {
         searchResponse.setPageNum(searchParam.getPageNum());
         searchResponse.setPageSize(searchParam.getPageSize());
 
-        return null;
+        return searchResponse;
     }
 
     /**
@@ -169,11 +169,11 @@ public class SearchProductServiceImpl implements SearchProductService {
         // 1.2 过滤
         if (searchParam.getCatelog3()!=null&&searchParam.getCatelog3().length>0) {
             //按照三级分类过滤
-            boolQueryBuilder.filter(QueryBuilders.termQuery("productCategoryId",searchParam.getCatelog3()));
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("productCategoryId",searchParam.getCatelog3()));
         }
         if (searchParam.getBrand()!=null&&searchParam.getBrand().length>0) {
             //按照品牌分类过滤
-            boolQueryBuilder.filter(QueryBuilders.termQuery("brandName.keyword",searchParam.getBrand()));
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("brandName.keyword",searchParam.getBrand()));
         }
         if (searchParam.getProps()!=null&&searchParam.getProps().length>0) {
             //按照所有的筛选属性进行过滤
@@ -183,7 +183,7 @@ public class SearchProductServiceImpl implements SearchProductService {
                 String[] split = prop.split(":");
                 BoolQueryBuilder must = QueryBuilders.boolQuery()
                         .must(QueryBuilders.matchQuery("attrValueList.productAttributeId", split[0]))
-                        .must(QueryBuilders.termQuery("attrValueList.value.keyword", split[1].split("-")));
+                        .must(QueryBuilders.termsQuery("attrValueList.value.keyword", split[1].split("-")));
                 NestedQueryBuilder query = QueryBuilders.nestedQuery("attrValueList", must, ScoreMode.None);
                 boolQueryBuilder.filter(query);
             }
@@ -201,7 +201,7 @@ public class SearchProductServiceImpl implements SearchProductService {
 
         builder.query(boolQueryBuilder);
         //2.高亮
-        if (StringUtils.isEmpty(searchParam.getKeyword())) {
+        if (!StringUtils.isEmpty(searchParam.getKeyword())) {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
             highlightBuilder.field("skuProductInfos.skuTitle");
             highlightBuilder.preTags("<b style='color:red'>");
