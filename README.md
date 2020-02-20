@@ -41,6 +41,18 @@ http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-service.html
 
 - es mapping修改 **嵌入式对象的Mapping一定要用nested声明，这样才能正确的检索到数据**
 
+
+
+分布式锁
+
+异步缓存
+
+社交网站登录 
+
+单点登录
+
+
+
 商品数据的Mapping：
 
 ```json
@@ -443,3 +455,4 @@ GET product/_search
 
 es最重要的就是数据模型
 
+锁测试
