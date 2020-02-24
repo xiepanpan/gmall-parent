@@ -16,10 +16,15 @@ public class HelloController {
     @Autowired
     RedisIncrService redisIncrService;
 
-    @GetMapping("/incr")
-    public String incr() {
-        redisIncrService.incr();
+//    @GetMapping("/incr")
+//    public String incr() {
+//        redisIncrService.incr();
+//        return "ok";
+//    }
+
+    @GetMapping("incr2")
+    public String incr2() {
+        redisIncrService.incrDistribute();
         return "ok";
     }
-
 }
