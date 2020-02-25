@@ -1,5 +1,7 @@
 package com.xiepanpan.locks.lockstest.service;
 
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author: xiepanpan
@@ -32,6 +35,8 @@ public class RedisIncrService {
     StringRedisTemplate redisTemplate;
     @Autowired
     JedisPool jedisPool;
+    @Autowired
+    RedissonClient redissonClient;
 
 
 //    public synchronized void incr() {
@@ -91,6 +96,29 @@ public class RedisIncrService {
             } finally {
                 jedis.close();
             }
+    }
+
+    /**
+     * 使用Redisson实现分布式锁
+     */
+    public void  useRedissonForLock() {
+        //1、获取一把锁。只要各个代码，用的锁名一样即可
+        RLock lock = redissonClient.getLock("lock");
+        try {
+            // 一直等待 阻塞住
+//            lock.lock();
+
+            //加锁带自动解锁  三秒后自动解锁
+            lock.lock(3,TimeUnit.SECONDS);
+            Jedis jedis = jedisPool.getResource();
+            String num = jedis.get("num");
+            Integer i = Integer.parseInt(num);
+            i+=1;
+            jedis.set("num",i.toString());
+            jedis.close();
+        } finally {
+            lock.unlock();
+        }
     }
 
 }

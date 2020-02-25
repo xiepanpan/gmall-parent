@@ -40,6 +40,23 @@
             <artifactId>jedis</artifactId>
             <version>3.0.1</version>
         </dependency>
+        <!--热部署-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>springloaded</artifactId>
+            <version>1.2.5.RELEASE</version>
+        </dependency>
+        <!--防止lombok报错-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.2</version>
+        </dependency>
 
 
         <!--redisson-->
@@ -63,8 +80,11 @@
             <artifactId>redisson</artifactId>
             <version>3.10.0</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.25</version>
+        </dependency>
 
 
     </dependencies>
@@ -78,9 +98,11 @@
                 <version>2.0.4.RELEASE</version>
                 <configuration>
                     <mainClass>com.xiepanpan.locks.lockstest.LocksTestApplication</mainClass>
+                    <fork>true</fork>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
+
+            <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-jar-plugin</artifactId>-->
 <!--                <version>3.0.2</version>-->
