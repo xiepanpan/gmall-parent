@@ -2,6 +2,7 @@ package com.xiepanpan.gmall.pms.service;
 
 import com.xiepanpan.gmall.pms.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xiepanpan.gmall.to.es.EsProduct;
 import com.xiepanpan.gmall.vo.PageInfoVo;
 import com.xiepanpan.gmall.vo.product.PmsProductParam;
 import com.xiepanpan.gmall.vo.product.PmsProductQueryParam;
@@ -44,4 +45,13 @@ public interface ProductService extends IService<Product> {
      * @param publishStatus
      */
     void updatePublishStatus(List<Long> ids, Integer publishStatus);
+
+    /**
+     * 从es中根据id获取商品信息
+     * @param id
+     * @return
+     */
+    EsProduct productAllInfo(Long id);
+
+    EsProduct productSkuInfo(Long id);
 }
