@@ -1,15 +1,19 @@
 package com.xiepanpan.gmall.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
+import com.xiepanpan.gmall.constant.SysCacheConstant;
+import com.xiepanpan.gmall.to.CommonResult;
+import com.xiepanpan.gmall.ums.entity.Member;
+import com.xiepanpan.gmall.ums.service.MemberService;
+import com.xiepanpan.gmall.vo.ums.LoginResponseVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: xiepanpan
@@ -28,6 +33,9 @@ public class LoginController {
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Reference
+    MemberService memberService;
 
     /**
      * 登录
@@ -79,5 +87,46 @@ public class LoginController {
         response.addCookie(cookie);
         // (2) 重定向到之前的路径
         response.sendRedirect(redirectUrl+"?"+"sso_user="+token);
+    }
+
+
+    /**
+     * 本系统登录功能
+     * @param username
+     * @param password
+     * @return
+     */
+    @RequestMapping("/loginForGmall")
+    @ResponseBody
+    public CommonResult loginForGmall(@RequestParam("username")String username,
+                                      @RequestParam("password")String password) {
+        Member member = memberService.login(username, password);
+        if (member==null) {
+            //没有用户
+            CommonResult result = new CommonResult().failed();
+            result.setMessage("账号密码不匹配，请重新登录");
+            return result;
+        }else {
+            //
+            String token = UUID.randomUUID().toString().replace("-", "");
+            String memberJson = JSON.toJSONString(member);
+            redisTemplate.opsForValue().set(SysCacheConstant.LOGIN_MEMBER+token,memberJson,
+                    SysCacheConstant.LOGIN_MEMBER_TIMEOUT, TimeUnit.MINUTES);
+            LoginResponseVo loginResponseVo = new LoginResponseVo();
+            BeanUtils.copyProperties(member,loginResponseVo);
+            loginResponseVo.setAccessToken(token);
+            return new CommonResult().success(loginResponseVo);
+        }
+    }
+    @ResponseBody
+    @GetMapping("/userInfo")
+    public CommonResult getUserInfo(@RequestParam("accessToken")String accessToken) {
+        //确定去redis中查询用户用的key
+        String redisKey = SysCacheConstant.LOGIN_MEMBER + accessToken;
+        String member = redisTemplate.opsForValue().get(redisKey);
+        Member loginMember = JSON.parseObject(member, Member.class);
+        loginMember.setId(null);
+        loginMember.setPassword(null);
+        return  new CommonResult().success(loginMember);
     }
 }
