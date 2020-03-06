@@ -47,10 +47,14 @@ http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-service.html
 
 异步缓存
 
-社交网站登录 
+微博社交网站登录 
 
 单点登录
 
+
+### 购物车功能
+
+CompletableFuture 组合式异步编程 查询sku信息和商品信息
 
 
 商品数据的Mapping：
