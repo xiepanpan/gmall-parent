@@ -59,7 +59,9 @@ public class CartServiceImpl implements CartService {
 
         Member member = memberComponent.getMemberByAccessToken(accessToken);
         if (member!=null&& StringUtils.isEmpty(cartKey)) {
-            //合并购物车
+            //用户登录了  合并购物车
+            log.info("====合并购物车===");
+            mergeCart(cartKey,member.getId());
         }
         UserCartKey userCartKey = memberComponent.getCartKey(accessToken, cartKey);
         String finalCartKey = userCartKey.getFinalCartKey();
@@ -69,6 +71,37 @@ public class CartServiceImpl implements CartService {
 
 
         return cartResponse;
+    }
+
+    /**
+     * 把临时购物车的数据合并到用户购物车中
+     * @param cartKey 临时购物车的key
+     * @param id
+     */
+    private void mergeCart(String cartKey, Long id) {
+        String oldCartKey = CartConstant.TEMP_CART_KEY_PREFIX + cartKey;
+        String userCartKey = CartConstant.USER_CART_KEY_PREFIX + id.toString();
+        RMap<String, String> map = redissonClient.getMap(oldCartKey);
+
+        if (map!=null&&!map.isEmpty()) {
+            map.entrySet().forEach(item->{
+                //skuId
+                String key = item.getKey();
+                if (!key.equalsIgnoreCase(CartConstant.CART_CHECKED_KEY)) {
+                    String value = item.getValue();
+                    CartItem cartItem = JSON.parseObject(value, CartItem.class);
+                    try {
+                        addItemToCart(Long.valueOf(key),cartItem.getCount(),userCartKey);
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            });
+            map.clear();
+        }
     }
 
     private CartItem addItemToCart(Long skuId, Integer num, String finalCartKey) throws ExecutionException, InterruptedException {
