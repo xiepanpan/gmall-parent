@@ -1,0 +1,149 @@
+package com.xiepanpan.gmall.cart.service.impl;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.xiepanpan.gmall.cart.component.MemberComponent;
+import com.xiepanpan.gmall.cart.service.CartService;
+import com.xiepanpan.gmall.cart.vo.Cart;
+import com.xiepanpan.gmall.cart.vo.CartItem;
+import com.xiepanpan.gmall.cart.vo.CartResponse;
+import com.xiepanpan.gmall.cart.vo.UserCartKey;
+import com.xiepanpan.gmall.constant.CartConstant;
+import com.xiepanpan.gmall.pms.entity.Product;
+import com.xiepanpan.gmall.pms.entity.SkuStock;
+import com.xiepanpan.gmall.pms.service.ProductService;
+import com.xiepanpan.gmall.pms.service.SkuStockService;
+import com.xiepanpan.gmall.ums.entity.Member;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RMap;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import springfox.documentation.spring.web.json.Json;
+
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+/**
+ * @author: xiepanpan
+ * @Date: 2020/3/4
+ * @Description:
+ */
+@Service
+@Component
+@Slf4j
+public class CartServiceImpl implements CartService {
+
+    @Autowired
+    MemberComponent memberComponent;
+
+    @Reference
+    SkuStockService skuStockService;
+
+    @Reference
+    ProductService productService;
+
+    @Autowired
+    RedissonClient redissonClient;
+
+    @Override
+    public CartResponse addToCart(Long skuId, Integer num, String cartKey, String accessToken) throws ExecutionException, InterruptedException {
+
+        Member member = memberComponent.getMemberByAccessToken(accessToken);
+        if (member!=null&& StringUtils.isEmpty(cartKey)) {
+            //合并购物车
+        }
+        UserCartKey userCartKey = memberComponent.getCartKey(accessToken, cartKey);
+        String finalCartKey = userCartKey.getFinalCartKey();
+        CartItem cartItem = addItemToCart(skuId, num, finalCartKey);
+        CartResponse cartResponse = new CartResponse();
+        cartResponse.setCartItem(cartItem);
+
+
+        return cartResponse;
+    }
+
+    private CartItem addItemToCart(Long skuId, Integer num, String finalCartKey) throws ExecutionException, InterruptedException {
+        /**
+         * 1、只接受上一步的结果
+         * thenAccept(r){
+         *     r:上一步的结果
+         *
+         * }
+         *
+         * 2、thenApply(r){
+         *     r：把上一步的结果拿来进行修改再返回，
+         * }
+         *
+         * 3、thenAccpet(){} 上一步结果1s+本次处理2s=3s
+         *
+         * 4、thenAccpetAsync(){} 上一步1s+异步2s = 最多等2s
+         */
+        //
+        CartItem newCartItem = new CartItem();
+        CompletableFuture<Void> skuFuture = CompletableFuture.supplyAsync(() -> {
+            SkuStock skuStock = skuStockService.getById(skuId);
+            return skuStock;
+        }).thenAcceptAsync(stock -> {
+            //拿到上一步的商品id
+            Long productId = stock.getProductId();
+            Product product = productService.getById(productId);
+            //
+            BeanUtils.copyProperties(stock, newCartItem);
+            newCartItem.setSkuId(stock.getId());
+            newCartItem.setName(product.getName());
+            newCartItem.setCount(num);
+        });
+        RMap<String, String> map = redissonClient.getMap(finalCartKey);
+        String itemJson = map.get(skuId.toString());
+        skuFuture.get();
+        //检查购物车是否已存在这个购物项
+        if (!StringUtils.isEmpty(itemJson)) {
+            //购物车存在该sku 数量添加
+            CartItem oldItem = JSON.parseObject(itemJson, CartItem.class);
+            Integer count = oldItem.getCount();
+            newCartItem.setCount(count+newCartItem.getCount());
+            String string = JSON.toJSONString(newCartItem);
+            map.put(skuId.toString(),string);
+        }else {
+            //新增购物项
+            String string = JSON.toJSONString(newCartItem);
+            map.put(skuId.toString(),string);
+        }
+        //
+        checkItem(Arrays.asList(skuId),true,finalCartKey);
+        return newCartItem;
+    }
+
+    /**
+     * 选中或是否移除 购物项
+     * @param skuId
+     * @param checked
+     * @param finalCartKey
+     */
+    private void checkItem(List<Long> skuId, boolean checked, String finalCartKey) {
+        RMap<String, String> cart = redissonClient.getMap(finalCartKey);
+        String checkedJson = cart.get(CartConstant.CART_CHECKED_KEY);
+        Set<Long> longSet = JSON.parseObject(checkedJson, new TypeReference<Set<Long>>() {
+        });
+        if (longSet==null||longSet.isEmpty()) {
+            longSet = new LinkedHashSet<>();
+        }
+        if (checked) {
+            longSet.addAll(skuId);
+            log.info("被选中的商品：{}",longSet);
+        }else {
+            longSet.removeAll(skuId);
+            log.info("被移除的商品：{}",longSet);
+        }
+        cart.put(CartConstant.CART_CHECKED_KEY,JSON.toJSONString(longSet));
+    }
+}
