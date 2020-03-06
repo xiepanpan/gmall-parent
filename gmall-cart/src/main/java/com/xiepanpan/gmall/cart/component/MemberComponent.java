@@ -57,7 +57,7 @@ public class MemberComponent {
             userCartKey.setFinalCartKey(CartConstant.TEMP_CART_KEY_PREFIX+cartKey);
             return userCartKey;
         }else {
-            //用户没有登录 也没有临时购物车
+            //用户没有登录 也没有临时购物车 创建临时key
             String replace = UUID.randomUUID().toString().replace("-", "");
             userCartKey.setLogin(false);
             userCartKey.setFinalCartKey(CartConstant.TEMP_CART_KEY_PREFIX+replace);

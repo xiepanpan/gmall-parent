@@ -20,4 +20,24 @@ public interface CartService {
      * @return
      */
     CartResponse addToCart(Long skuId,Integer num,String cartKey,String accessToken) throws ExecutionException, InterruptedException;
+
+    /**
+     * 更新购物车中的购物项数量
+     * @param skuId
+     * @param num
+     * @param cartKey
+     * @param accessToken
+     * @return
+     */
+    CartResponse updateCartItem(Long skuId, Integer num, String cartKey, String accessToken);
+
+    /**
+     * 查看购物车
+     * @param cartKey
+     * @param accessToken
+     * @return
+     */
+    CartResponse listCart(String cartKey, String accessToken);
+
+    CartResponse delCartItem(Long skuId, String cartKey, String accessToken);
 }

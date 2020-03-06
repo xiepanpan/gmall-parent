@@ -25,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import springfox.documentation.spring.web.json.Json;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -70,6 +67,68 @@ public class CartServiceImpl implements CartService {
         cartResponse.setCartItem(cartItem);
 
 
+        return cartResponse;
+    }
+
+    @Override
+    public CartResponse updateCartItem(Long skuId, Integer num, String cartKey, String accessToken) {
+        UserCartKey userCartKey = memberComponent.getCartKey(accessToken, cartKey);
+        String finalCartKey = userCartKey.getFinalCartKey();
+        RMap<Object, Object> map = redissonClient.getMap(finalCartKey);
+
+        String json = (String) map.get(skuId.toString());
+        CartItem cartItem = JSON.parseObject(json, CartItem.class);
+        cartItem.setCount(num);
+
+        String jsonString = JSON.toJSONString(cartItem);
+        map.put(skuId.toString(),jsonString);
+        CartResponse cartResponse = new CartResponse();
+        cartResponse.setCartItem(cartItem);
+        return cartResponse;
+    }
+
+    @Override
+    public CartResponse listCart(String cartKey, String accessToken) {
+        UserCartKey userCartKey = memberComponent.getCartKey(accessToken, cartKey);
+        if (userCartKey.isLogin()) {
+            //用户登录了 合并购物车
+        }
+        String finalCartKey = userCartKey.getFinalCartKey();
+        RMap<String, String> map = redissonClient.getMap(finalCartKey);
+        Cart cart = new Cart();
+        CartResponse cartResponse = new CartResponse();
+        List<CartItem> cartItems = new ArrayList<>();
+        if (map!=null&& !map.isEmpty()) {
+            map.entrySet().forEach(item->{
+                //缓存中不仅存了购物项 还存了选中的集合 在遍历时排除
+                if (!item.getKey().equalsIgnoreCase(CartConstant.CART_CHECKED_KEY)) {
+                    String value = item.getValue();
+                    CartItem cartItem = JSON.parseObject(value, CartItem.class);
+                    cartItems.add(cartItem);
+                }
+
+            });
+            cart.setCartItems(cartItems);
+        }else {
+            //用户还没有购物车 新建一个购物车
+            cartResponse.setCartKey(userCartKey.getTempCartKey());
+        }
+        cartResponse.setCart(cart);
+        return cartResponse;
+    }
+
+    @Override
+    public CartResponse delCartItem(Long skuId, String cartKey, String accessToken) {
+        UserCartKey userCartKey = memberComponent.getCartKey(accessToken, cartKey);
+        String finalCartKey = userCartKey.getFinalCartKey();
+        //删掉sku 把对应选中集合的sku也删掉
+        checkItem(Arrays.asList(skuId),false,finalCartKey);
+
+        //移除缓存中对应的key
+        RMap<Object, Object> map = redissonClient.getMap(finalCartKey);
+        map.remove(skuId.toString());
+
+        CartResponse cartResponse = listCart(cartKey, accessToken);
         return cartResponse;
     }
 
