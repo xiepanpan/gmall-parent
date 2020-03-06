@@ -132,6 +132,16 @@ public class CartServiceImpl implements CartService {
         return cartResponse;
     }
 
+    @Override
+    public CartResponse clearCart(String cartKey,String accessToken) {
+        UserCartKey userCartKey = memberComponent.getCartKey(accessToken, cartKey);
+        String finalCartKey = userCartKey.getFinalCartKey();
+        RMap<Object, Object> map = redissonClient.getMap(finalCartKey);
+        map.clear();
+        CartResponse cartResponse = new CartResponse();
+        return cartResponse;
+    }
+
     /**
      * 把临时购物车的数据合并到用户购物车中
      * @param cartKey 临时购物车的key

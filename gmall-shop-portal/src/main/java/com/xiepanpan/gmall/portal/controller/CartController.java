@@ -87,4 +87,11 @@ public class CartController {
         CartResponse cartResponse = cartService.delCartItem(skuId, cartKey, accessToken);
         return new CommonResult().success(cartResponse);
     }
+
+    @GetMapping("/clear")
+    public CommonResult cartClear(@RequestParam(value = "cartKey",required = false)String cartKey,
+                                  @RequestParam(value = "accessToken",required = false)String accessToken) {
+        CartResponse cartResponse = cartService.clearCart(cartKey, accessToken);
+        return  new CommonResult().success(cartResponse);
+    }
 }

@@ -2,7 +2,7 @@
 
 使用mybatisgenerator 生成mapper  dao
 
-
+**GlobalExceptionHandler  统一处理全部异常  json封装返回前端**
 
 dubbo zookeeper  
 
