@@ -57,6 +57,21 @@ http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-service.html
 CompletableFuture 组合式异步编程 查询sku信息和商品信息
 
 
+
+![](https://xiepanpan123.oss-cn-beijing.aliyuncs.com/%E5%9C%A8%E7%BA%BF%E8%B4%AD%E7%89%A9%E8%BD%A6%E7%BC%93%E5%AD%98%E6%A8%A1%E5%BC%8F.png)
+
+
+
+
+
+![](https://xiepanpan123.oss-cn-beijing.aliyuncs.com/%E4%B8%B4%E6%97%B6%E8%B4%AD%E7%89%A9%E8%BD%A6%E7%BC%93%E5%AD%98%E6%A8%A1%E5%9E%8B.png)
+
+
+
+
+
+
+
 商品数据的Mapping：
 
 ```json
