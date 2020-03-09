@@ -5,6 +5,7 @@ import com.xiepanpan.gmall.cart.service.CartService;
 import com.xiepanpan.gmall.cart.vo.CartResponse;
 import com.xiepanpan.gmall.to.CommonResult;
 import io.swagger.annotations.Api;
+import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.ExecutionException;
@@ -88,10 +89,33 @@ public class CartController {
         return new CommonResult().success(cartResponse);
     }
 
+    /**
+     * 清空购物车
+     * @param cartKey
+     * @param accessToken
+     * @return
+     */
     @GetMapping("/clear")
     public CommonResult cartClear(@RequestParam(value = "cartKey",required = false)String cartKey,
                                   @RequestParam(value = "accessToken",required = false)String accessToken) {
         CartResponse cartResponse = cartService.clearCart(cartKey, accessToken);
         return  new CommonResult().success(cartResponse);
+    }
+
+    /**
+     * 购物项选中/不选中
+     * @param skuIds
+     * @param ops
+     * @param cartKey
+     * @param accessToken
+     * @return
+     */
+    @PostMapping("/check")
+    public CommonResult cartCheck(@RequestParam("skuIds")String skuIds,
+                                  @RequestParam(value = "ops",defaultValue = "1")Integer ops,
+                                  @RequestParam(value = "cartKey",required = false) String cartKey,
+                                  @RequestParam(value = "accessToken",required = false)String accessToken) {
+        CartResponse cartResponse = cartService.checkCartItems(skuIds, ops, cartKey, accessToken);
+        return new CommonResult().success(cartResponse);
     }
 }

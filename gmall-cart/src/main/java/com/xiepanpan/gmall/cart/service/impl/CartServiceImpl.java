@@ -142,6 +142,35 @@ public class CartServiceImpl implements CartService {
         return cartResponse;
     }
 
+    @Override
+    public CartResponse checkCartItems(String skuIds, Integer ops, String cartKey, String accessToken) {
+        List<Long> skuIdsList = new ArrayList<>();
+        UserCartKey userCartKey = memberComponent.getCartKey(accessToken, cartKey);
+        String finalCartKey = userCartKey.getFinalCartKey();
+        RMap<String, String> map = redissonClient.getMap(finalCartKey);
+        boolean checked = ops==1?true:false;
+        if (!StringUtils.isEmpty(skuIds)) {
+            String[] ids = skuIds.split(",");
+            for (String id: ids) {
+                long skuId = Long.parseLong(id);
+                skuIdsList.add(skuId);
+                if (map!=null&& !map.isEmpty()) {
+                    String jsonValue = map.get(id);
+                    CartItem cartItem = JSON.parseObject(jsonValue, CartItem.class);
+                    cartItem.setCheck(checked);
+                    map.put(id,JSON.toJSONString(cartItem));
+                }
+            }
+        }
+
+        //为了快速找到那个被选中的 我们单独维护了数组 数组在map中用的key 值是选中的skuId set集合
+        checkItem(skuIdsList,checked,finalCartKey);
+
+        //返回整个购物车
+        CartResponse cartResponse = listCart(cartKey, accessToken);
+        return cartResponse;
+    }
+
     /**
      * 把临时购物车的数据合并到用户购物车中
      * @param cartKey 临时购物车的key
@@ -241,10 +270,10 @@ public class CartServiceImpl implements CartService {
         }
         if (checked) {
             longSet.addAll(skuId);
-            log.info("被选中的商品：{}",longSet);
+            log.info("目前被选中的商品：{}",longSet);
         }else {
             longSet.removeAll(skuId);
-            log.info("被移除的商品：{}",longSet);
+            log.info("目前被选中的商品：{}",longSet);
         }
         cart.put(CartConstant.CART_CHECKED_KEY,JSON.toJSONString(longSet));
     }

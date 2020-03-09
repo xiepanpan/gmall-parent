@@ -42,4 +42,6 @@ public interface CartService {
     CartResponse delCartItem(Long skuId, String cartKey, String accessToken);
 
     CartResponse clearCart(String cartKey, String accessToken);
+
+    CartResponse checkCartItems(String skuIds, Integer ops, String cartKey, String accessToken);
 }
